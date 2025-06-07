@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Sharing App</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="consolidated-style.css">
+</head>
+<body>
+
+    <div id="controls">
+        <h4>Find Your Route Match</h4>
+        <div id="controls2">
+            <input type="text" id="source" placeholder="Enter location">
+            <button id="from-current-btn">Use Current Location</button>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4kxERXX951ICLHUOr12lwjXA0wd41b18h2w&s" id="liveicon">
+            <div id="source-suggestions" class="suggestions1"></div>
+            <input type="text" id="destination" placeholder="Enter destination">
+            <div id="destination-suggestions" class="suggestions2"></div>
+            <button id="route-btn">Get matches</button>
+        </div>
+    </div>
+
+    <div id="toggle-container">
+        <button id="toggle-routing" onclick="toggleRouting()">Collapse</button>
+    </div>
+    <div class="location-button" id="livloc">
+        <div class="location-icon">
+            <div class="center-circle"></div>
+            <div class="center-dot"></div>
+        </div>
+    </div>
+    <div id="map"></div>
+
+    <div style="display: flex; align-items: center;">
+        <img src="img/unnamed (2).png" id="demonstration1" style="width: 650px; margin-right: 200px; padding-left: 100px; padding-top: 100px;">
+        <ul style="list-style-type: none; padding: 0;">
+            <li>Choose the Route</li>
+            <li>Find the match</li>
+            <li>Reach and benefit together</li>
+        </ul>
+    </div>
+
+    <div id="loading" style="display: none;">Loading...</div>
+    <div id="connection-status" style="position: fixed; top: 10px; right: 10px; background-color: rgba(0,0,0,0.6); color: white; padding: 5px 10px; border-radius: 5px;">Connecting...</div>
+    
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <script src="consolidated_script_1_js.js"></script>
+    <!-- <script src="scripts/initmap.js"></script>
+    <script src="scripts/currentloc.js"></script>
+    <script src="set.js"></script> -->
+    <!-- <script src="scripts/fetch2.js"></script>
+    <script src="scripts/current2.js"></script>
+    <script src="scripts/save.js"></script>
+    <script src="scripts/zoom.js"></script>
+    <script src="scripts/suggest.js"></script> -->
+</body>
+</html>
