@@ -205,44 +205,6 @@ function updateConnectionStatus(message, color = "green") {
     }
 }
 
-
-// Send route data to Socket.io
-function broadcastRoute(sourceLatLng, destinationLatLng) {
-    try {
-        if (!socket || !socket.connected) {
-            console.error("❌ Socket not connected, cannot broadcast route");
-            updateConnectionStatus("Not Connected", "red");
-            return;
-        }
-
-        const timestamp = new Date().toISOString();
-        const path = control && control.getWaypoints() ? 
-            control.getWaypoints().map(wp => [wp.latLng.lat, wp.latLng.lng]) : 
-            [[sourceLatLng.lat, sourceLatLng.lng], [destinationLatLng.lat, destinationLatLng.lng]];
-        
-        const routeData = {
-            userID: currentUserID,
-            timestamp: timestamp,
-            source: [sourceLatLng.lat, sourceLatLng.lng],
-            destination: [destinationLatLng.lat, destinationLatLng.lng],
-            path: path,
-            isNewRoute: true
-        };
-
-        console.log("🚀 Broadcasting route:", routeData);
-        
-        // Send to socket.io server
-        socket.emit("message", routeData);
-        
-        // Also update our own map with this route
-        updateMapWithRoute(routeData);
-        
-    } catch (error) {
-        console.error("❌ Error broadcasting route:", error);
-        updateConnectionStatus("Broadcast Error", "orange");
-    }
-}
-
 // Generate a random user ID if not already stored
 function generateUserID() {
     const userID = 'user_' + Math.random().toString(36).substr(2, 9);

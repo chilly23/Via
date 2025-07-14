@@ -91,10 +91,58 @@ function initMap(lat, lon, accuracy) {
 // Update the route based on existing markers
 function updateRouteWithMarkers() {
     if (sourceMarker && destinationMarker) {
+        // Get via points from the current route if they exist
+        const viaPoints = [];
+        if (control && control.getWaypoints().length > 2) {
+            const waypoints = control.getWaypoints();
+            // Skip first (source) and last (destination) waypoints
+            for (let i = 1; i < waypoints.length - 1; i++) {
+                if (waypoints[i].latLng) {
+                    viaPoints.push([waypoints[i].latLng.lat, waypoints[i].latLng.lng]);
+                }
+            }
+        }
+        
         control.setWaypoints([sourceMarker.getLatLng(), destinationMarker.getLatLng()]);
-        broadcastRoute(sourceMarker.getLatLng(), destinationMarker.getLatLng());
+        broadcastRoute(sourceMarker.getLatLng(), destinationMarker.getLatLng(), viaPoints);
     }
 }
+
+
+// Send route data to Socket.io
+function broadcastRoute(sourceLatLng, destinationLatLng, viaPoints = []) {
+    try {
+        if (!socket || !socket.connected) {
+            console.error("❌ Socket not connected, cannot broadcast route");
+            updateConnectionStatus("Not Connected", "red");
+            return;
+        }
+
+        const timestamp = new Date().toISOString();
+        
+        const routeData = {
+            userID: currentUserID,
+            timestamp: timestamp,
+            source: [sourceLatLng.lat, sourceLatLng.lng],
+            destination: [destinationLatLng.lat, destinationLatLng.lng],
+            via: viaPoints, // Array of via points
+            isNewRoute: true
+        };
+
+        console.log("🚀 Broadcasting route:", routeData);
+        
+        // Send to socket.io server
+        socket.emit("message", routeData);
+        
+        // Also update our own map with this route
+        updateMapWithRoute(routeData);
+        
+    } catch (error) {
+        console.error("❌ Error broadcasting route:", error);
+        updateConnectionStatus("Broadcast Error", "orange");
+    }
+}
+
 
 // Fetch coordinates for a location name
 function getCoordinates(locationName) {

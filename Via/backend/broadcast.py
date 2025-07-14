@@ -83,7 +83,7 @@ class BroadcastHandler:
             route_data = message_data if isinstance(message_data, dict) else json.loads(message_data)
             
             # Validate required fields
-            required_fields = ['userID', 'source', 'destination', 'path']
+            required_fields = ['userID', 'source', 'destination']
             if not all(field in route_data for field in required_fields):
                 logging.error(f"❌ Missing required fields in route data: {route_data}")
                 emit('error', {'message': 'Missing required route data'})
@@ -93,6 +93,24 @@ class BroadcastHandler:
             client_sid = request.sid
             route_data['socketId'] = client_sid
             route_data['timestamp'] = datetime.utcnow().isoformat()
+            
+            # Validate via points if provided
+            if 'via' in route_data and route_data['via']:
+                if not isinstance(route_data['via'], list):
+                    route_data['via'] = []
+                else:
+                    # Validate each via point
+                    valid_via = []
+                    for via_point in route_data['via']:
+                        if isinstance(via_point, list) and len(via_point) >= 2:
+                            try:
+                                lat, lng = float(via_point[0]), float(via_point[1])
+                                valid_via.append([lat, lng])
+                            except (ValueError, TypeError):
+                                continue
+                    route_data['via'] = valid_via
+            else:
+                route_data['via'] = []
             
             # Store in active routes
             self.active_routes[client_sid] = route_data
@@ -116,7 +134,7 @@ class BroadcastHandler:
             logging.error(f"❌ Error parsing Socket message: {e}")
             logging.error(f"Message data: {message_data}")
             emit('error', {'message': 'Failed to process route data'})
-    
+
     def get_existing_routes(self):
         """Get existing routes from storage or fallback to in-memory"""
         if self.storage_handler:
